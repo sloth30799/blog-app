@@ -1,6 +1,6 @@
 const express = require("express")
 const app = express()
-require('express-async-errors')
+require("express-async-errors")
 const cors = require("cors")
 const morgan = require("morgan")
 const mongoose = require("mongoose")
@@ -9,6 +9,7 @@ const middleware = require("./utils/middleware")
 const logger = require("./utils/logger")
 const blogsRouter = require("./controllers/blogs")
 const usersRouter = require("./controllers/users")
+const loginRouter = require("./controllers/login")
 
 mongoose.set("strictQuery", false)
 
@@ -45,10 +46,13 @@ app.use(
   })
 )
 
-app.use("/api/blogs", blogsRouter)
+app.use(middleware.tokenExtractor)
+app.use(middleware.errorHandler)
+
+app.use("/api/blogs", middleware.userExtractor, blogsRouter)
 app.use("/api/users", usersRouter)
+app.use("/api/login", loginRouter)
 
 app.use(middleware.unknownEndpoint)
-app.use(middleware.errorHandler)
 
 module.exports = app

@@ -14,7 +14,8 @@ blogsRouter.get("/", async (req, res) => {
 
 blogsRouter.post("/", async (req, res) => {
   const { body } = req
-  const user = await User.findOne({})
+
+  const user = await User.findById(req.user.id)
 
   const blog = new Blog({
     title: body.title,
@@ -49,9 +50,22 @@ blogsRouter.put("/:id", async (req, res) => {
 })
 
 blogsRouter.delete("/:id", async (req, res) => {
-  await Blog.findByIdAndRemove(req.params.id)
+  const blog = await Blog.findById(req.params.id)
 
-  res.status(204).end()
+  if (!blog) {
+    res.status(404).json({ error: "Not Found: Blog not found" })
+  }
+
+  if (blog.user.toString() === req.user.id) {
+    await Blog.findByIdAndRemove(req.params.id)
+    res.status(204).end()
+  } else {
+    res
+      .status(403)
+      .json({
+        error: "Forbidden: You do not have permission to delete this blog",
+      })
+  }
 })
 
 module.exports = blogsRouter
