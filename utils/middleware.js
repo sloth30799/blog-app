@@ -27,7 +27,7 @@ const tokenExtractor = (req, res, next) => {
     req.token = authorization.replace("Bearer ", "")
     next()
   } else {
-    res.status(401).json({ error: "Token invalid" })
+    res.status(401).json({ error: "Unauthorized" })
   }
 }
 
@@ -37,7 +37,7 @@ const userExtractor = (req, res, next) => {
     req.user = userFromToken
     next()
   } else {
-    res.status(401).json({ error: "token invalid" })
+    res.status(401).json({ error: "Unauthorized" })
   }
 }
 
