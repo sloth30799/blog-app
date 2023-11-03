@@ -44,7 +44,7 @@ blogsRouter.put("/:id", async (req, res) => {
 
   const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, body, {
     new: true,
-  })
+  }).populate("user", { username: 1, name: 1 })
 
   res.json(updatedBlog)
 })
@@ -60,11 +60,9 @@ blogsRouter.delete("/:id", async (req, res) => {
     await Blog.findByIdAndRemove(req.params.id)
     res.status(204).end()
   } else {
-    res
-      .status(403)
-      .json({
-        error: "Forbidden: You do not have permission to delete this blog",
-      })
+    res.status(403).json({
+      error: "Forbidden: You do not have permission to delete this blog",
+    })
   }
 })
 
